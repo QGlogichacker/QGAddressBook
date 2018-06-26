@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class UpdateTable extends JDialog {
     private static final long serialVersionUID = 8849421438735909968L;
@@ -38,15 +39,26 @@ public class UpdateTable extends JDialog {
             UpdateTable dialog = new UpdateTable((JTable)null, (DefaultTableModel)null, 0);
             dialog.setDefaultCloseOperation(2);
             dialog.setVisible(true);
-        } catch (Exception var2) {
-            var2.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
     public UpdateTable(final JTable table, final DefaultTableModel dtm, int id) {
         this.setMemId(id);
-        this.setTitle("Update Data");
+        try {
+            List<Member> memberList= DbOperate.enquirePart("id", String.valueOf(id));
+            if(!memberList.isEmpty()){
+                setMem(memberList.get(0));
+            }else{
+                FalseDialog.getFalseDialog("数据库数据库错误，没有对应id行");
+            }
+            this.setTitle("Update Data");
+        } catch (Exception e) {
+            e.printStackTrace();
+            FalseDialog.getFalseDialog("无法连接到数据库");
+        }
         this.setBounds(100, 100, 901, 160);
         this.getContentPane().setLayout(new BorderLayout());
         this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -73,35 +85,35 @@ public class UpdateTable extends JDialog {
         label = new JLabel("地址");
         label.setBounds(786, 13, 30, 18);
         this.contentPanel.add(label);
-        this.memclass = new JTextField();
+        this.memclass = new JTextField(getMem().getClas());
         this.memclass.setBounds(331, 37, 86, 24);
         this.contentPanel.add(this.memclass);
         this.memclass.setColumns(10);
-        this.memphone = new JTextField();
+        this.memphone = new JTextField(getMem().getPhone());
         this.memphone.setBounds(436, 37, 86, 24);
         this.contentPanel.add(this.memphone);
         this.memphone.setColumns(10);
-        this.mememail = new JTextField();
+        this.mememail = new JTextField(getMem().getEmail());
         this.mememail.setBounds(547, 37, 86, 24);
         this.contentPanel.add(this.mememail);
         this.mememail.setColumns(10);
-        this.memdormitory = new JTextField();
+        this.memdormitory = new JTextField(getMem().getDormitory());
         this.memdormitory.setBounds(655, 37, 86, 24);
         this.contentPanel.add(this.memdormitory);
         this.memdormitory.setColumns(10);
-        this.memname = new JTextField();
+        this.memname = new JTextField(getMem().getName());
         this.memname.setBounds(14, 37, 86, 24);
         this.contentPanel.add(this.memname);
         this.memname.setColumns(10);
-        this.memgroup = new JTextField();
+        this.memgroup = new JTextField(getMem().getGroup());
         this.memgroup.setBounds(120, 37, 86, 24);
         this.contentPanel.add(this.memgroup);
         this.memgroup.setColumns(10);
-        this.memgrade = new JTextField();
+        this.memgrade = new JTextField(getMem().getGrade());
         this.memgrade.setBounds(225, 37, 86, 24);
         this.contentPanel.add(this.memgrade);
         this.memgrade.setColumns(10);
-        this.memaddress = new JTextField();
+        this.memaddress = new JTextField(getMem().getAddress());
         this.memaddress.setColumns(10);
         this.memaddress.setBounds(762, 37, 86, 24);
         this.contentPanel.add(this.memaddress);
@@ -141,7 +153,7 @@ public class UpdateTable extends JDialog {
             fd.setVisible(true);
         } else {
             this.mem = new Member(this.memId, this.memname.getText(), this.memgroup.getText(), this.memgrade.getText(), this.memclass.getText(), this.memphone.getText(), this.mememail.getText(), this.memdormitory.getText(), this.memaddress.getText());
-                System.out.println(this.mem.getId() + this.mem.toString());
+//                System.out.println(this.mem.getId() + this.mem.toString());
             try {
                 DbOperate.updateMember(this.mem);
             } catch (Exception var5) {
